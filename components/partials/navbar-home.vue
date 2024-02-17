@@ -19,7 +19,12 @@ const navMenu: NavMenuItem[] = [
 	{ type: "link", to: "#partner", label: "Partner Teknologi" },
 	{ type: "link", to: "/contact-us", label: "Hubungi Kami" },
 	{ type: "separator" },
-	{ type: "link", to: "https://mydesk.yamnet.id", isExternal: true, label: "Masuk" },
+	{
+		type: "link",
+		to: "https://mydesk.yamnet.id",
+		isExternal: true,
+		label: "Masuk",
+	},
 	{ type: "cta", to: "/coverage", label: "Cek Jaringan" },
 ];
 </script>
@@ -92,7 +97,7 @@ export default {
 		color: $white;
 		padding: 0.5rem 0.75rem;
 		border-radius: $border-radius-lg;
-		
+
 		&:hover {
 			background-color: darken($primary, 10%);
 		}
@@ -101,8 +106,8 @@ export default {
 </style>
 
 <template>
-	<nav class="navbar fixed-top navbar-expand-lg" ref="main-navbar">
-		<div class="container">
+	<nav class="container fixed-top" ref="refNavbar">
+		<div class="navbar navbar-expand-lg">
 			<nuxt-link
 				:to="{ name: 'index' }"
 				class="navbar-brand"
@@ -137,7 +142,11 @@ export default {
 							v-if="menu.type === 'link'"
 							:class="[
 								'nav-link',
-								{ active: menu.to === currentRouteLink.fullPath || menu.to === currentRouteLink.hash },
+								{
+									active:
+										menu.to === currentRouteLink.fullPath ||
+										menu.to === currentRouteLink.hash,
+								},
 							]"
 							aria-current="page"
 							:to="menu.to"
