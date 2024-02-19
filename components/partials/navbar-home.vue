@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const refNavbar = ref(null);
+const refNavbar: Ref<HTMLElement | null> = ref(null);
 const currentRouteLink = useRoute();
 
 interface NavMenuItem {
@@ -14,9 +14,9 @@ interface NavMenuItem {
 
 const navMenu: NavMenuItem[] = [
 	{ type: "link", to: "/", label: "Beranda" },
-	{ type: "link", to: "#pricing", label: "Harga Layanan" },
-	{ type: "link", to: "#service", label: "Total Solution" },
-	{ type: "link", to: "#partner", label: "Partner Teknologi" },
+	{ type: "link", to: "/#pricing", label: "Harga Layanan" },
+	{ type: "link", to: "/#service", label: "Total Solution" },
+	{ type: "link", to: "/#partner", label: "Partner Teknologi" },
 	{ type: "link", to: "/contact-us", label: "Hubungi Kami" },
 	{ type: "separator" },
 	{
@@ -27,6 +27,19 @@ const navMenu: NavMenuItem[] = [
 	},
 	{ type: "cta", to: "/coverage", label: "Cek Jaringan" },
 ];
+
+const handlenavbar = () => {
+	let currentScrollHeight = window.scrollY;
+
+	if (currentScrollHeight > 50 && refNavbar.value) {
+		refNavbar.value.classList.add("scrolled");
+	} else {
+		refNavbar.value?.classList.remove("scrolled");
+	}
+};
+
+onMounted(() => window.addEventListener("scroll", handlenavbar));
+onUnmounted(() => window.removeEventListener("scroll", handlenavbar));
 </script>
 
 <script lang="ts">
@@ -36,10 +49,50 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.main-navbar {
+	transition: all 0.2s;
+	padding: 1rem 0;
+	margin-top: 0;
+	border-radius: $border-radius-xl;
+
+	@media screen and (max-width: 1200px) {
+		padding: 1rem;
+		border-radius: 0 0 $border-radius-xl $border-radius-xl;
+	}
+
+	&.scrolled {
+		margin-top: 1rem;
+		background: $white;
+		padding: 1rem 1.25rem;
+		border: 1px solid $gray-300;
+		box-shadow: 0 0.25rem 2.5rem 0.5rem rgba($dark, 0.125);
+
+		@media screen and (max-width: 1200px) {
+			padding: 1rem;
+			margin-top: 0;
+		}
+	}
+}
+
 .navbar {
-	.navbar-brand img {
-		height: 48px;
-		width: auto;
+	padding: 0;
+	.navbar-brand {
+		padding: 0;
+
+		img {
+			height: 48px;
+			width: auto;
+		}
+	}
+
+	.navbar-toggler {
+		padding: 0.25rem;
+		border: 0;
+
+		&:focus,
+		&:active {
+			box-shadow: 0 0 0 0.25rem rgba($dark, 0.25);
+		}
 	}
 
 	.nav-item {
@@ -59,7 +112,7 @@ export default {
 					background: $secondary;
 					width: 0;
 					transition: all 0.2s;
-					border-radius: $border-radius-lg;
+					border-radius: $border-radius-pill;
 				}
 
 				&.active {
@@ -72,7 +125,44 @@ export default {
 
 					&::before {
 						width: 50%;
+
+						@media screen and (max-width: 1200px) {
+							width: 0% !important;
+						}
 					}
+				}
+			}
+		}
+	}
+
+	.navbar-nav {
+		transition: all 0.2s;
+
+		@media screen and (max-width: 1200px) {
+			padding: 1rem;
+			border-radius: $border-radius-xl;
+			background: $white;
+			border: 1px solid $gray-300;
+			margin-top: 0.5rem;
+
+			.nav-item:not(:last-child) {
+				.nav-link {
+					--bs-nav-link-padding-y: 0.5rem;
+					--bs-nav-link-padding-x: 0.5rem;
+
+					margin: 0;
+				}
+			}
+		}
+
+		@at-root .scrolled & {
+			padding: 0;
+			border-color: transparent;
+
+			.nav-item:not(:last-child) {
+				.nav-link {
+					--bs-nav-link-padding-y: 0.5rem;
+					--bs-nav-link-padding-x: 0;
 				}
 			}
 		}
@@ -88,7 +178,21 @@ export default {
 			height: 100%;
 			border-left: 1px solid transparent;
 			border-bottom: 1px solid transparent;
-			border-left-color: $gray-300;
+			border-left-color: $gray-500;
+
+			@at-root .scrolled & {
+				border-left-color: $gray-300;
+			}
+		}
+
+		@media screen and (max-width: 1200px) {
+			margin: 1rem 0;
+
+			.line {
+				width: 100%;
+				border-left-color: transparent;
+				border-bottom-color: $gray-300;
+			}
 		}
 	}
 
@@ -106,8 +210,8 @@ export default {
 </style>
 
 <template>
-	<nav class="container fixed-top" ref="refNavbar">
-		<div class="navbar navbar-expand-lg">
+	<nav class="container-xl fixed-top main-navbar" ref="refNavbar">
+		<div class="navbar navbar-expand-xl">
 			<nuxt-link
 				:to="{ name: 'index' }"
 				class="navbar-brand"
@@ -131,38 +235,41 @@ export default {
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-					<li
-						:class="[{ separator: menu.type === 'separator' }, 'nav-item']"
-						v-for="(menu, index) in navMenu"
-						:key="index"
-					>
-						<nuxt-link
-							v-if="menu.type === 'link'"
-							:class="[
-								'nav-link',
-								{
-									active:
-										menu.to === currentRouteLink.fullPath ||
-										menu.to === currentRouteLink.hash,
-								},
-							]"
-							aria-current="page"
-							:to="menu.to"
-							>{{ menu.label }}</nuxt-link
+			<client-only>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+						<li
+							:class="[{ separator: menu.type === 'separator' }, 'nav-item']"
+							v-for="(menu, index) in navMenu"
+							:key="index"
 						>
-						<div v-else-if="menu.type === 'separator'" class="line"></div>
-						<nuxt-link
-							v-else-if="menu.type === 'cta'"
-							class="nav-link cta-button"
-							aria-current="page"
-							:to="menu.to"
-							>{{ menu.label }}</nuxt-link
-						>
-					</li>
-				</ul>
-			</div>
+							<nuxt-link
+								v-if="menu.type === 'link'"
+								:class="[
+									'nav-link',
+									{
+										active:
+											menu.to === currentRouteLink.fullPath ||
+											menu.to === currentRouteLink.hash,
+									},
+								]"
+								aria-current="page"
+								:to="menu.to"
+								:target="menu.isExternal ? '_blank' : ''"
+								>{{ menu.label }}</nuxt-link
+							>
+							<div v-else-if="menu.type === 'separator'" class="line"></div>
+							<nuxt-link
+								v-else-if="menu.type === 'cta'"
+								class="nav-link cta-button"
+								aria-current="page"
+								:to="menu.to"
+								>{{ menu.label }}</nuxt-link
+							>
+						</li>
+					</ul>
+				</div>
+			</client-only>
 		</div>
 	</nav>
 </template>

@@ -4,7 +4,16 @@ export default defineNuxtConfig({
 
   css: [
     '~/assets/scss/bootstrap/bootstrap.scss',
+		'@fortawesome/fontawesome-svg-core/styles.css',
   ],
+
+	app: {
+		head: {
+			script: [
+				{ src: 'https://kit.fontawesome.com/4ac369a501.js', crossorigin: 'anonymous' },
+			]
+		}
+	},
 
   modules: [
     'nuxt3-leaflet',
@@ -12,24 +21,26 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     'nuxt-svgo',
     '@nuxt/image',
+		'nuxt-swiper',
   ],
 
   googleFonts: {
     families: {
       Inter: true,
-      Poppins: true,
+      Gabarito: true,
+      Poppins: [400, 500, 600, 700, 800, 900],
       'JetBrains Mono': true,
     },
     display: 'swap',
     subsets: 'greek',
-    preconnect: true,
-    preload: true,
-    useStylesheet: true,
-    prefetch: true,
-    download: true,
-    base64: true,
-    inject: true,
-    overwriting: true
+		download: true,
+  },
+
+	
+  image: {
+    format: ['webp'],
+    quality: 80,
+		inject: true,
   },
 
   vite: {
